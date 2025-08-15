@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Employees";
+}
+
+<a class="btn btn-primary mt-3 ms-2" href="/Employees/Create">Add New Employee</a>
+<div class="table-responsive">
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>EmployeeID</th>
+                <th>Employee First Name</th>
+                <th>Employee Last Name</th>
+                <th>Email Address</th>
+                <th>DOB</th>
+                <th>Age</th>
+                <th>Salary</th>
+                <th>Department</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EmployeeID</td>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                    <td>@item.EmailAddress</td>
+                    <td>@item.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Age</td>
+                    <td>@item.Salary</td>
+                    <td>@item.DeptName</td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" href="/Employees/Create/@item.EmployeeID">Edit</a>
+                        <a class="btn btn-danger btn-sm" href="/Employees/Delete/@item.EmployeeID" onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

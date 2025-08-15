@@ -1,0 +1,41 @@
+﻿@model CompanyManagement.Models.Department
+@{
+    var department = Model ?? new CompanyManagement.Models.Department();
+    bool isEdit = department.DepartmentID > 0;
+    ViewData["Title"] = isEdit ? "Edit Department" : "Add Department";
+}
+
+<h1>@ViewData["Title"]</h1>
+<form asp-action="@(isEdit ? "Edit" : "Create")" method="post" onsubmit="return validateForm();">
+    @if (isEdit)
+    {
+        <input type="hidden" asp-for="DepartmentID" value="@department.DepartmentID" />
+    }
+    <div class="mb-3">
+        <label>Department Code *</label>
+        <input asp-for="DepartmentCode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Department Name *</label>
+        <input asp-for="DepartmentName" class="form-control" />
+    </div>
+    <button type="submit" class="btn @(isEdit ? "btn-warning" : "btn-success")">
+        @(isEdit ? "Update" : "Add")
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+</form>
+
+<script>
+    function validateForm(){
+        const DepartmentCode = document.querySelector('[name="DepartmentCode"]').value.trim();
+        const DepartmentName = document.querySelector('[name="DepartmentName"]').value.trim();
+
+        if (!DepartmentCode || !DepartmentName ) {
+            alert("All fields are required: Department decodeURI and Department Name");
+            return false; 
+        }
+
+        return true;
+    }
+</script>

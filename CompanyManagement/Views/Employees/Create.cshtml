@@ -1,0 +1,82 @@
+﻿@model CompanyManagement.Models.Employee
+
+@{
+    var employee = Model ?? new CompanyManagement.Models.Employee();
+    bool isEdit = employee.EmployeeID > 0;
+    ViewData["Title"] = isEdit ? "Edit Employee" : "Add Employee";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="@(isEdit ? "Edit" : "Create")" method="post" onsubmit="return validateForm();">
+    @if (isEdit)
+    {
+        <input type="hidden" asp-for="EmployeeID" value="@employee.EmployeeID" />
+    }
+
+    <div class="mb-3">
+        <label>First Name *</label>
+        <input asp-for="FirstName" class="form-control" value="@employee.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Last Name *</label>
+        <input asp-for="LastName" class="form-control" value="@employee.LastName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email Address *</label>
+        <input asp-for="EmailAddress" type="email" class="form-control" value="@employee.EmailAddress" />
+    </div>
+
+    <div class="mb-3">
+        <label>Date of Birth *</label>
+        <input asp-for="DateOfBirth"
+               type="date"
+               class="form-control"
+               max="@DateTime.Now.ToString("yyyy-MM-dd")"
+               value="@(employee.DateOfBirth != default(DateTime)
+                ? employee.DateOfBirth.ToString("yyyy-MM-dd")
+                : DateTime.Now.ToString("yyyy-MM-dd"))" />
+    </div>
+
+
+    <div class="mb-3">
+        <label>Salary *</label>
+        <input asp-for="Salary" type="number" step="0.01" class="form-control" value="@employee.Salary" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DepartmentID" class="form-label">Department *</label>
+        <select asp-for="DepartmentID" class="form-control">
+            <option value="">-- Select Department --</option>
+            @foreach (var dept in ViewBag.Departments)
+            {
+                <option value="@dept.DepartmentID">@dept.DepartmentName</option>
+            }
+        </select>
+    </div>
+
+
+    <button type="submit" class="btn @(isEdit ? "btn-warning" : "btn-success")">
+        @(isEdit ? "Update" : "Add")
+    </button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    function validateForm() {
+        const firstName = document.querySelector('[name="FirstName"]').value.trim();
+        const lastName = document.querySelector('[name="LastName"]').value.trim();
+        const email = document.querySelector('[name="EmailAddress"]').value.trim();
+        const dob = document.querySelector('[name="DateOfBirth"]').value;
+        const salary = document.querySelector('[name="Salary"]').value.trim();
+        const department = document.querySelector('[name="DepartmentID"]').value.trim();
+
+        if (!firstName || !lastName || !email || !dob || !salary || !department) {
+            alert("All fields are required.");
+            return false;
+        }
+        return true;
+    }
+</script>
