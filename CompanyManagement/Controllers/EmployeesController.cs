@@ -1,5 +1,6 @@
 ﻿using CompanyManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 using System.Net.Mail;
 
@@ -71,7 +72,10 @@ namespace CompanyManagement.Controllers
                 return View(employee);
 
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("INSERT INTO Employee (FName, LName, Email, DOB, Age, Salary, DepartmentID) VALUES (@fname, @lname, @email, @dob, @age, @salary, @deptID)", con);
+            //var cmd = new SqlCommand("INSERT INTO Employee (FName, LName, Email, DOB, Age, Salary, DepartmentID, Remark) VALUES (@fname, @lname, @email, @dob, @age, @salary, @deptID, @remark)", con);
+
+            var cmd = new SqlCommand("ADD_EmployeeDetails",con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@fname", employee.FirstName);
             cmd.Parameters.AddWithValue("@lname", employee.LastName);
             cmd.Parameters.AddWithValue("@email", employee.EmailAddress);
@@ -79,6 +83,7 @@ namespace CompanyManagement.Controllers
             cmd.Parameters.AddWithValue("@age", employee.Age);
             cmd.Parameters.AddWithValue("@salary", employee.Salary);
             cmd.Parameters.AddWithValue("@deptID", employee.DepartmentID);
+            cmd.Parameters.AddWithValue("@remark", employee.Remark);
             con.Open();
             cmd.ExecuteNonQuery();
             return RedirectToAction("Index");
