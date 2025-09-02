@@ -18,7 +18,9 @@ namespace CompanyManagement.Controllers
         {
             var Employee = new List<Employee>();
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("SELECT E.EmpID, E.FName, E.LName, E.Email, E.DOB, E.Age, E.Salary, E.DepartmentID, D.DeptName FROM Employee E INNER JOIN Department D ON D.DeptID = E.DepartmentID", con);
+            //var cmd = new SqlCommand("SELECT E.EmpID, E.FName, E.LName, E.Email, E.DOB, E.Age, E.Salary, E.DepartmentID, D.DeptName FROM Employee E INNER JOIN Department D ON D.DeptID = E.DepartmentID", con);
+            var cmd = new SqlCommand("GET_GetEmployeeDetails", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             con.Open();
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -51,7 +53,9 @@ namespace CompanyManagement.Controllers
         {
             var list = new List<Department>();
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("SELECT DeptID, DeptName FROM Department", con);
+            //var cmd = new SqlCommand("SELECT DeptID, DeptName FROM Department", con);
+            var cmd = new SqlCommand("GET_GetDepartmentDetailsForEmployee", con);
+            cmd.CommandType= CommandType.StoredProcedure;
             con.Open();
             var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -95,7 +99,9 @@ namespace CompanyManagement.Controllers
             ViewBag.Departments = GetDepartments();
             Employee emp = new();
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("SELECT E.EmpID, E.FName, E.LName, E.Email, E.DOB, E.Age, E.Salary, E.DepartmentID, D.DeptName FROM Employee E INNER JOIN Department D ON D.DeptID = E.DepartmentID WHERE EmpID=@id", con);
+            //var cmd = new SqlCommand("SELECT E.EmpID, E.FName, E.LName, E.Email, E.DOB, E.Age, E.Salary, E.DepartmentID, D.DeptName FROM Employee E INNER JOIN Department D ON D.DeptID = E.DepartmentID WHERE EmpID=@id", con);
+            var cmd = new SqlCommand("GET_GetEmployeeDetailsByEmployeeID", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@id", EmpID);
             con.Open();
             using var reader = cmd.ExecuteReader();
@@ -111,6 +117,7 @@ namespace CompanyManagement.Controllers
                 emp.Salary = (decimal)reader["Salary"];
                 emp.DepartmentID = (int)reader["DepartmentID"];
                 emp.DeptName = reader["DeptName"].ToString();
+                emp.Remark = reader["Remark"].ToString();
             }
             return View(emp);
         }
@@ -121,7 +128,10 @@ namespace CompanyManagement.Controllers
             if (!ModelState.IsValid)
                 return View(employee);
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("UPDATE Employee SET FName=@fname, LName=@lname, Email = @email, DOB = @dob, Age = @age, Salary = @salary, DepartmentID = @deptID WHERE EmpID=@id", con);
+            // var cmd = new SqlCommand("UPDATE Employee SET FName=@fname, LName=@lname, Email = @email, DOB = @dob, Age = @age, Salary = @salary, DepartmentID = @deptID WHERE EmpID=@id", con);
+
+            var cmd = new SqlCommand("UPDATE_UpdateEmployeeDetailsByEmployeeID", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@fname", employee.FirstName);
             cmd.Parameters.AddWithValue("@lname", employee.LastName);
             cmd.Parameters.AddWithValue("@email", employee.EmailAddress);
@@ -129,6 +139,7 @@ namespace CompanyManagement.Controllers
             cmd.Parameters.AddWithValue("@age", employee.Age);
             cmd.Parameters.AddWithValue("@salary", employee.Salary);
             cmd.Parameters.AddWithValue("@deptID", employee.DepartmentID);
+            cmd.Parameters.AddWithValue("@remark", employee.Remark);
             cmd.Parameters.AddWithValue("@id", employee.EmployeeID);
             con.Open();
             cmd.ExecuteNonQuery();
@@ -138,7 +149,10 @@ namespace CompanyManagement.Controllers
         public IActionResult Delete(int id)
         {
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("DELETE FROM Employee WHERE EmpID=@id", con);
+            //var cmd = new SqlCommand("DELETE FROM Employee WHERE EmpID=@id", con);
+
+            var cmd = new SqlCommand("DELETE_DeleteEmployeeDetailsByEmployeeID", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@id", id);
             con.Open();
             cmd.ExecuteNonQuery();

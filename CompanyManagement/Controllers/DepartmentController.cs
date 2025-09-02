@@ -1,5 +1,6 @@
 ﻿using CompanyManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
 
@@ -17,7 +18,9 @@ namespace CompanyManagement.Controllers
         {
             var dept = new List<Department>();
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("SELECT * FROM Department", con);
+            //var cmd = new SqlCommand("SELECT * FROM Department", con);
+            var cmd = new SqlCommand("GET_GetAllDepartmentDetails", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             con.Open();
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -46,7 +49,9 @@ namespace CompanyManagement.Controllers
                 return View(department);
 
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("INSERT INTO Department (DeptCode, DeptName) VALUES (@DeptCode, @DeptName)", con);
+            //var cmd = new SqlCommand("INSERT INTO Department (DeptCode, DeptName) VALUES (@DeptCode, @DeptName)", con);
+            var cmd = new SqlCommand("ADD_CreateDepartment", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@DeptCode", department.DepartmentCode);
             cmd.Parameters.AddWithValue("@DeptName", department.DepartmentName);
             con.Open();
@@ -59,7 +64,10 @@ namespace CompanyManagement.Controllers
         {
             Department dept = new();
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("SELECT * FROM Department WHERE DeptID=@id", con);
+            //var cmd = new SqlCommand("SELECT * FROM Department WHERE DeptID=@id", con);
+
+            var cmd = new SqlCommand("GET_GetDepartmentDetailsByID", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@id", DeptID);
             con.Open();
             using var reader = cmd.ExecuteReader();
@@ -79,7 +87,10 @@ namespace CompanyManagement.Controllers
                 return View(model);
 
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("UPDATE Department SET DeptCode=@DepartmentCode, DeptName=@DepartmentName WHERE DeptID=@id", con);
+            //var cmd = new SqlCommand("UPDATE Department SET DeptCode=@DepartmentCode, DeptName=@DepartmentName WHERE DeptID=@id", con);
+
+            var cmd = new SqlCommand("UPDATE_UpdateDepartmentDetailByDerpartmentID", con);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@DepartmentCode", model.DepartmentCode);
             cmd.Parameters.AddWithValue("@DepartmentName", model.DepartmentName);
             cmd.Parameters.AddWithValue("@id", model.DepartmentID);
@@ -91,7 +102,10 @@ namespace CompanyManagement.Controllers
         public IActionResult Delete(int id)
         {
             using var con = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var cmd = new SqlCommand("DELETE FROM Department WHERE DeptID=@id", con);
+            //var cmd = new SqlCommand("DELETE FROM Department WHERE DeptID=@id", con);
+
+            var cmd = new SqlCommand("DELETE_DeleteDepartmentDetailsByDepartmentID", con);
+            cmd.CommandType= CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@id", id);
             con.Open();
             cmd.ExecuteNonQuery();
